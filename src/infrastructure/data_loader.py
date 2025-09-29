@@ -58,3 +58,19 @@ plt.show()
 
 # Gestion des valeurs manquantes
 
+numeric_values = data.select_dtypes(include=["int64","float64"])
+object_values = data.select_dtypes(include=["object"])
+
+for col_num in numeric_values : 
+    print("les valeur qui onrt vide est " , data[col_num].isnull().sum())
+    data[col_num].fillna(data[col_num].median(),inplace=True)
+
+
+
+for col_obj in object_values :
+    print("les valeur qui onrt vide est " , data[col_obj].isnull().sum())
+    data[col_obj].fillna(data[col_obj].mode()[0],inplace=True)
+
+# Suppression des doublons
+
+data.drop_duplicates(inplace=True)
