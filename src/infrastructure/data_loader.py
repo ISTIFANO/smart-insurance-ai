@@ -1,12 +1,13 @@
 import pandas as pd
 import seaborn as sns
-
+from scipy.stats import zscore
+import numpy as np
 import matplotlib.pyplot as plt
 
 path = r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\infrastructure\data\assurance-maladie-68d92978e362f464596651.csv"
 data = pd.read_csv(path)
 
-# print(data.describe())
+print(data.describe())
 
 #  analyse descriptive des données (moyennes, médianes, écarts-types pour les variables numériques ; fréquences pour les catégoriques)
 statis = pd.DataFrame({
@@ -33,15 +34,15 @@ print(data.duplicated().sum())
 
 # Analyser la distribution des variables numériques (ex. : histogrammes avec Matplotlib/Seaborn).
 
-# cols = data.select_dtypes(include=['int64', 'float64']).columns
+cols = data.select_dtypes(include=['int64', 'float64']).columns
 
-# for col in cols:
-#     plt.figure(figsize=(6,4))
-#     plt.hist(data[col], bins=20, color='skyblue', edgecolor='black')
-#     plt.title(f"distribution de {col}")
-#     plt.xlabel(col)
-#     plt.ylabel("Frequence")
-#     plt.show()
+for col in cols:
+    plt.figure(figsize=(6,4))
+    plt.hist(data[col], bins=20, color='skyblue', edgecolor='black')
+    plt.title(f"distribution de {col}")
+    plt.xlabel(col)
+    plt.ylabel("Frequence")
+    plt.show()
 
 # les relations entre variables à l'aide de matrices de corrélation et de visualisations (ex. : pairplots ou heatmaps).
 
@@ -74,3 +75,28 @@ for col_obj in object_values :
 # Suppression des doublons
 
 data.drop_duplicates(inplace=True)
+
+# Détection et gestion des valeurs aberrantes : Utiliser des techniques statistiques (ex. : boîte à moustaches avec Seaborn, z-score > 3, ou IQR pour identifier les outliers) et gérer les lignes contenant des valeurs aberrantes (suppression).
+
+numeric_cols = data.select_dtypes(include=["int64","float64"]).columns
+
+for col in numeric_cols:
+    Q1 = data[col].quantile(0.25)  
+    Q3 = data[col].quantile(0.75) 
+    IQR = Q3 - Q1                 
+    
+    lowerbound = Q1 - 1.5 * IQR
+    upperbound = Q3 + 1.5 * IQR
+    
+    outliers = data[(data[col] < lowerbound) | (data[col] > upperbound)]
+    print(f"{col} → {len(outliers)} valeurs aberrantes detecte")
+    
+    data = data[(data[col] >= lowerbound) & (data[col] <= upperbound)]
+
+# Z score methode 
+
+z_score =  np.abs(zscore(data[numeric_cols]))
+
+mask = (z_score>3).all(axis=1)
+
+print("Nombre de valeurs aberrantes :", (mask).sum())
