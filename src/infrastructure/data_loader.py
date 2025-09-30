@@ -3,6 +3,8 @@ import seaborn as sns
 from scipy.stats import zscore
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 
 path = r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\infrastructure\data\assurance-maladie-68d92978e362f464596651.csv"
 data = pd.read_csv(path)
@@ -78,34 +80,54 @@ print(data.describe())
 
 # # Détection et gestion des valeurs aberrantes : Utiliser des techniques statistiques (ex. : boîte à moustaches avec Seaborn, z-score > 3, ou IQR pour identifier les outliers) et gérer les lignes contenant des valeurs aberrantes (suppression).
 
-numeric_cols = data.select_dtypes(include=["int64","float64"]).columns
+# numeric_cols = data.select_dtypes(include=["int64","float64"]).columns
 
-for col in numeric_cols:
-    Q1 = data[col].quantile(0.25)  
-    Q3 = data[col].quantile(0.75) 
-    IQR = Q3 - Q1                 
+# for col in numeric_cols:
+#     Q1 = data[col].quantile(0.25)  
+#     Q3 = data[col].quantile(0.75) 
+#     IQR = Q3 - Q1                 
     
-    lowerbound = Q1 - 1.5 * IQR
-    upperbound = Q3 + 1.5 * IQR
+#     lowerbound = Q1 - 1.5 * IQR
+#     upperbound = Q3 + 1.5 * IQR
     
-    outliers = data[(data[col] < lowerbound) | (data[col] > upperbound)]
-    print(f"{col} → {len(outliers)} valeurs aberrantes detecte")
+#     outliers = data[(data[col] < lowerbound) | (data[col] > upperbound)]
+#     print(f"{col} → {len(outliers)} valeurs aberrantes detecte")
     
-data01 = data[(data[col] >= lowerbound) & (data[col] <= upperbound)]
+# data01 = data[(data[col] >= lowerbound) & (data[col] <= upperbound)]
 
-# Z score methode 
+# # Z score methode 
 
-z_score =  np.abs(zscore(data[numeric_cols]))
+# z_score =  np.abs(zscore(data[numeric_cols]))
 
-mask = (z_score<3).all(axis=1)
+# mask = (z_score<3).all(axis=1)
 
-print("nombre de valeurs aberrantes :", (~mask).sum())
+# print("nombre de valeurs aberrantes :", (~mask).sum())
 
-data02 = data[mask]
+# data02 = data[mask]
 
-for col in numeric_cols:
-    plt.figure(figsize=(6,4))
-    sns.boxplot(x=data02[col])
-    plt.title(f"Boîte a moustaches pour {col}")
-    plt.show()
+# for col in numeric_cols:
+#     plt.figure(figsize=(6,4))
+#     sns.boxplot(x=data02[col])
+#     plt.title(f"Boîte a moustaches pour {col}")
+#     plt.show()
 
+encode = LabelEncoder()
+
+for column01 in ["smoker","children","region","sex"] :
+    data[column01] = encode.fit_transform(data[column01])
+
+print(data.head())
+
+# Diviser les données en ensembles d'entraînement et de test (80% / 20%) avec traintestsplit de Scikit-learn.
+
+X = data.drop("children", axis=1)
+y = data["children"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+print("Taille X_train :", X_train.shape)
+print("Taille X_test  :", X_test.shape)
+print("Taille y_train :", y_train.shape)
+print("Taille y_test  :", y_test.shape)
