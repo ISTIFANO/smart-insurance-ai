@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 path = r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\infrastructure\data\assurance-maladie-68d92978e362f464596651.csv"
 data = pd.read_csv(path)
@@ -131,3 +132,25 @@ print("Taille X_train :", X_train.shape)
 print("Taille X_test  :", X_test.shape)
 print("Taille y_train :", y_train.shape)
 print("Taille y_test  :", y_test.shape)
+
+
+# Appliquer une normalisation (MinMaxScaler) ou une standardisation (StandardScaler) sur les variables numériques pour harmoniser les échelles.
+
+numeric_col = data.select_dtypes(include=["int64", "float64"]).columns
+
+minMax_scaler = MinMaxScaler()
+data_minMax =  data.copy()
+data_minMax[numeric_col] = minMax_scaler.fit_transform(data[numeric_col])
+
+std_scaler = StandardScaler()
+data_std =  data.copy()
+
+data_std[numeric_col] = std_scaler.fit_transform(data[numeric_col])
+
+
+print("=== Normalisation MinMax ===")
+print(data_minMax.head())
+
+print("=== Standardisation ===")
+print(data_std.head())
+
