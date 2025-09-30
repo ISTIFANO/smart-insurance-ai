@@ -7,6 +7,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from xgboost import XGBRegressor
+from evaluate_model import evaluate_model
 
 path = r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\infrastructure\data\assurance-maladie-68d92978e362f464596651.csv"
 data = pd.read_csv(path)
@@ -44,4 +45,7 @@ for name, model in models.items():
     
     y_pred = pipeline.predict(X_test)
     
+    r2, rmse,mae = evaluate_model(pipeline, X_test, y_test)
+
+    print(f"{name}: R² = {r2:.4f}, RMSE = {rmse:.2f}, MAE = {mae:.2f}")
    
