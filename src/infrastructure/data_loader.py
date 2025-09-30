@@ -11,105 +11,105 @@ data = pd.read_csv(path)
 
 print(data.describe())
 
-# #  analyse descriptive des données (moyennes, médianes, écarts-types pour les variables numériques ; fréquences pour les catégoriques)
-# statis = pd.DataFrame({
-#     "max": data.max(numeric_only=True),
-#      "min" :  data.min(numeric_only=True),
-#       "Mediane" : data.median(numeric_only=True),
-#        "Moyenne " : data.mean(numeric_only=True),
-#         "ecarts types" : data.std(numeric_only=True)})
+#  analyse descriptive des données (moyennes, médianes, écarts-types pour les variables numériques ; fréquences pour les catégoriques)
+statis = pd.DataFrame({
+    "max": data.max(numeric_only=True),
+     "min" :  data.min(numeric_only=True),
+      "Mediane" : data.median(numeric_only=True),
+       "Moyenne " : data.mean(numeric_only=True),
+        "ecarts types" : data.std(numeric_only=True)})
 
-# print(statis)
+print(statis)
 
-# categorical = data.select_dtypes(include=['object']).columns
+categorical = data.select_dtypes(include=['object']).columns
 
-# for colu in categorical :
-#     print(data[colu].value_counts())
-#     print(data[colu].unique())
+for colu in categorical :
+    print(data[colu].value_counts())
+    print(data[colu].unique())
 
 
-# #  les valeurs manquantes et les doublons
+#  les valeurs manquantes et les doublons
 
-# print(data.isnull().sum())
+print(data.isnull().sum())
 
-# print(data.duplicated().sum())
+print(data.duplicated().sum())
 
-# # Analyser la distribution des variables numériques (ex. : histogrammes avec Matplotlib/Seaborn).
+# Analyser la distribution des variables numériques (ex. : histogrammes avec Matplotlib/Seaborn).
 
-# cols = data.select_dtypes(include=['int64', 'float64']).columns
+cols = data.select_dtypes(include=['int64', 'float64']).columns
 
-# for col in cols:
-#     plt.figure(figsize=(6,4))
-#     plt.hist(data[col], bins=20, color='skyblue', edgecolor='black')
-#     plt.title(f"distribution de {col}")
-#     plt.xlabel(col)
-#     plt.ylabel("Frequence")
-#     plt.show()
+for col in cols:
+    plt.figure(figsize=(6,4))
+    plt.hist(data[col], bins=20, color='skyblue', edgecolor='black')
+    plt.title(f"distribution de {col}")
+    plt.xlabel(col)
+    plt.ylabel("Frequence")
+    plt.show()
 
-# # les relations entre variables à l'aide de matrices de corrélation et de visualisations (ex. : pairplots ou heatmaps).
+# les relations entre variables à l'aide de matrices de corrélation et de visualisations (ex. : pairplots ou heatmaps).
 
-# mat_cor = data.corr(numeric_only=True)
+mat_cor = data.corr(numeric_only=True)
 
-# plt.figure(figsize=(9,7))
-# sns.heatmap(mat_cor,annot=True, fmt=".2f", cmap="coolwarm", cbar=True, square=True)
-# plt.show()
+plt.figure(figsize=(9,7))
+sns.heatmap(mat_cor,annot=True, fmt=".2f", cmap="coolwarm", cbar=True, square=True)
+plt.show()
     
 
-# sns.pairplot(data,hue='age')
-# plt.show()
+sns.pairplot(data,hue='age')
+plt.show()
 
 
-# # Gestion des valeurs manquantes
+# Gestion des valeurs manquantes
 
-# numeric_values = data.select_dtypes(include=["int64","float64"])
-# object_values = data.select_dtypes(include=["object"])
+numeric_values = data.select_dtypes(include=["int64","float64"])
+object_values = data.select_dtypes(include=["object"])
 
-# for col_num in numeric_values : 
-#     print("les valeur qui onrt vide est " , data[col_num].isnull().sum())
-#     data[col_num].fillna(data[col_num].median(),inplace=True)
+for col_num in numeric_values : 
+    print("les valeur qui onrt vide est " , data[col_num].isnull().sum())
+    data[col_num].fillna(data[col_num].median(),inplace=True)
 
 
 
-# for col_obj in object_values :
-#     print("les valeur qui onrt vide est " , data[col_obj].isnull().sum())
-#     data[col_obj].fillna(data[col_obj].mode()[0],inplace=True)
+for col_obj in object_values :
+    print("les valeur qui onrt vide est " , data[col_obj].isnull().sum())
+    data[col_obj].fillna(data[col_obj].mode()[0],inplace=True)
 
-# # Suppression des doublons
+# Suppression des doublons
 
-# data.drop_duplicates(inplace=True)
+data.drop_duplicates(inplace=True)
 
-# # Détection et gestion des valeurs aberrantes : Utiliser des techniques statistiques (ex. : boîte à moustaches avec Seaborn, z-score > 3, ou IQR pour identifier les outliers) et gérer les lignes contenant des valeurs aberrantes (suppression).
+# Détection et gestion des valeurs aberrantes : Utiliser des techniques statistiques (ex. : boîte à moustaches avec Seaborn, z-score > 3, ou IQR pour identifier les outliers) et gérer les lignes contenant des valeurs aberrantes (suppression).
 
-# numeric_cols = data.select_dtypes(include=["int64","float64"]).columns
+numeric_cols = data.select_dtypes(include=["int64","float64"]).columns
 
-# for col in numeric_cols:
-#     Q1 = data[col].quantile(0.25)  
-#     Q3 = data[col].quantile(0.75) 
-#     IQR = Q3 - Q1                 
+for col in numeric_cols:
+    Q1 = data[col].quantile(0.25)  
+    Q3 = data[col].quantile(0.75) 
+    IQR = Q3 - Q1                 
     
-#     lowerbound = Q1 - 1.5 * IQR
-#     upperbound = Q3 + 1.5 * IQR
+    lowerbound = Q1 - 1.5 * IQR
+    upperbound = Q3 + 1.5 * IQR
     
-#     outliers = data[(data[col] < lowerbound) | (data[col] > upperbound)]
-#     print(f"{col} → {len(outliers)} valeurs aberrantes detecte")
+    outliers = data[(data[col] < lowerbound) | (data[col] > upperbound)]
+    print(f"{col} → {len(outliers)} valeurs aberrantes detecte")
     
-# data01 = data[(data[col] >= lowerbound) & (data[col] <= upperbound)]
+data01 = data[(data[col] >= lowerbound) & (data[col] <= upperbound)]
 
-# # Z score methode 
+# Z score methode 
 
-# z_score =  np.abs(zscore(data[numeric_cols]))
+z_score =  np.abs(zscore(data[numeric_cols]))
 
-# mask = (z_score<3).all(axis=1)
+mask = (z_score<3).all(axis=1)
 
-# print("nombre de valeurs aberrantes :", (~mask).sum())
+print("nombre de valeurs aberrantes :", (~mask).sum())
 
-# data02 = data[mask]
+data02 = data[mask]
 
-# for col in numeric_cols:
-#     plt.figure(figsize=(6,4))
-#     sns.boxplot(x=data02[col])
-#     plt.title(f"Boîte a moustaches pour {col}")
-#     plt.show()
+for col in numeric_cols:
+    plt.figure(figsize=(6,4))
+    sns.boxplot(x=data02[col])
+    plt.title(f"Boîte a moustaches pour {col}")
+    plt.show()
 
 encode = LabelEncoder()
 
