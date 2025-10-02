@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split,GridSearchCV
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -50,8 +51,8 @@ for name, model in models.items():
     print(f"{name}: R² = {r2:.4f}, RMSE = {rmse:.2f}, MAE = {mae:.2f}")
    
 
-   #Définir une grille de recherche (GridSearchCV) ou aléatoire (RandomizedSearchCV) avec validation croisée (5 folds) pour les hyperparamètres (ex. : pour Random Forest : nestimators, maxdepth, minsamplessplit ; pour XGBoost : learningrate, maxdepth, subsample).
-# Comparer les performances des modèles avant et après optimisation (RMSE, MAE, R²).
+   #Definir une grille de recherche (GridSearchCV) ou aleatoire (RandomizedSearchCV) avec validation croisee (5 folds) pour les hyperparametres (ex. : pour Random Forest : nestimators, maxdepth, minsamplessplit ; pour XGBoost : learningrate, maxdepth, subsample).
+# Comparer les performances des modeles avant et apres optimisation (RMSE, MAE, R²).
 rfPipline = Pipeline([
     ('preprocessor', preprocessor),
     ('model', RandomForestRegressor(random_state=42))
@@ -105,4 +106,57 @@ xgb_grid.fit(X_train, y_train)
 
 bestmodelXG = xgb_grid.best_estimator_
 r2XG, rmseXG, maeXG = evaluate_model(bestmodelXG, X_test, y_test)
-print(f"XGBoost optimise : R² = {r2XG:.4f}, mse = {rmseXG:.2f}, MAE = {maeXG:.2f}")
+print(f"XGBoost optimise : R² = {r2XG:.4f}, mse = {rmseXG:.2f}, MAE = {maeXG:.2f}") 
+
+YP_RF = best_rf_model.predict(X_test)
+Y_P_XG = bestmodelXG.predict(X_test)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# Random Forest
+axes[0].scatter(YP_RF, y_test - YP_RF, alpha=0.6)
+axes[0].hlines(y=0, xmin=min(YP_RF), xmax=max(YP_RF), colors='red', linestyles='--')
+axes[0].set_title("Residus - Random Forest")
+axes[0].set_xlabel("Predictions")
+axes[0].set_ylabel("Residus")
+
+# XGBoost
+axes[1].scatter(Y_P_XG, y_test - Y_P_XG, alpha=0.6, color="orange")
+axes[1].hlines(y=0, xmin=min(Y_P_XG), xmax=max(Y_P_XG), colors='red', linestyles='--')
+axes[1].set_title("Residus - XGBoost")
+axes[1].set_xlabel("Predictions")
+axes[1].set_ylabel("Residus")
+
+plt.tight_layout()
+plt.show()
+
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+axes[0].scatter(y_test, YP_RF, alpha=0.6)
+axes[0].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')  # diagonale
+axes[0].set_title("Predictions vs Reelles - Random Forest")
+axes[0].set_xlabel("Valeurs reelles")
+axes[0].set_ylabel("Valeurs predites")
+
+axes[1].scatter(y_test, Y_P_XG, alpha=0.6, color="orange")
+axes[1].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+axes[1].set_title("Predictions vs Reelles - XGBoost")
+axes[1].set_xlabel("Valeurs reelles")
+axes[1].set_ylabel("Valeurs predites")
+
+plt.tight_layout()
+plt.show()
+
+r2_rf, rmse_rf, mae_rf = evaluate_model(best_rf_model, X_test, y_test)
+
+r2_xgb, rmse_xgb, mae_xgb = evaluate_model(bestmodelXG, X_test, y_test)
+
+results_df = pd.DataFrame({
+    "Modele": ["Random Forest Optimisé", "XGBoost Optimisé"],
+    "R²": [r2_rf, r2_xgb],
+    "RMSE": [rmse_rf, rmse_xgb],
+    "MAE": [mae_rf, mae_xgb]
+})
+
+print(results_df)
