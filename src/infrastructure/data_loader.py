@@ -110,7 +110,7 @@ for col in numeric_cols:
     plt.figure(figsize=(6,4))
     sns.boxplot(x=data02[col])
     plt.title(f"Boîte a moustaches pour {col}")
-    plt.show()
+    plt.show()  
 
 encode = LabelEncoder()
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split,GridSearchCV
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -44,8 +44,65 @@ for name, model in models.items():
     pipeline.fit(X_train, y_train)
     
     y_pred = pipeline.predict(X_test)
-    
+    print(pipeline)
     r2, rmse,mae = evaluate_model(pipeline, X_test, y_test)
 
     print(f"{name}: R² = {r2:.4f}, RMSE = {rmse:.2f}, MAE = {mae:.2f}")
    
+
+   #Définir une grille de recherche (GridSearchCV) ou aléatoire (RandomizedSearchCV) avec validation croisée (5 folds) pour les hyperparamètres (ex. : pour Random Forest : nestimators, maxdepth, minsamplessplit ; pour XGBoost : learningrate, maxdepth, subsample).
+# Comparer les performances des modèles avant et après optimisation (RMSE, MAE, R²).
+rfPipline = Pipeline([
+    ('preprocessor', preprocessor),
+    ('model', RandomForestRegressor(random_state=42))
+])
+
+rf_Parame = {
+    'model__n_estimators': [100, 200, 300],
+    'model__max_depth': [None, 5, 10, 20],
+    'model__min_samples_split': [2, 5, 10]
+}
+
+rfGrid = GridSearchCV(
+    estimator=rfPipline,
+    param_grid=rf_Parame,
+    scoring='neg_root_mean_squared_error',
+    cv=5
+)
+
+rfGrid.fit(X_train, y_train)
+
+print("\nRandom Forest -best hyperparametre :", rfGrid.best_params_)
+print(f"Random Forest - best mse cv : {-rfGrid.best_score_:.4f}")
+
+best_rf_model = rfGrid.best_estimator_
+r2_rf_tuned, rmse_rf_tuned, mae_rf_tuned = evaluate_model(best_rf_model, X_test, y_test)
+print(f"Random Forest optimise : R² = {r2_rf_tuned:.4f}, RMSE = {rmse_rf_tuned:.2f}, MAE = {mae_rf_tuned:.2f}")
+
+xgb_pipeline = Pipeline([
+    ('preprocessor', preprocessor),
+    ('model', XGBRegressor(random_state=42, verbosity=0))
+])
+
+xgb_param_grid = {
+    'model__learning_rate': [0.01, 0.1, 0.2],
+    'model__max_depth': [3, 5, 7],
+    'model__subsample': [0.7, 1.0],
+    'model__n_estimators': [100, 200]
+}
+
+xgb_grid = GridSearchCV(
+    estimator=xgb_pipeline,
+    param_grid=xgb_param_grid,
+    scoring='neg_root_mean_squared_error',
+    cv=5
+)
+
+xgb_grid.fit(X_train, y_train)
+
+print("\nXGBoost - best hyperparametres :", xgb_grid.best_params_)
+print(f"XGBoost - best rmse cv : {-xgb_grid.best_score_:.4f}")
+
+best_xgb_model = xgb_grid.best_estimator_
+r2_xgb_tuned, rmse_xgb_tuned, mae_xgb_tuned = evaluate_model(best_xgb_model, X_test, y_test)
+print(f"XGBoost optimise : R² = {r2_xgb_tuned:.4f}, mse = {rmse_xgb_tuned:.2f}, MAE = {mae_xgb_tuned:.2f}")
