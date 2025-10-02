@@ -72,8 +72,8 @@ rfGrid = GridSearchCV(
 
 rfGrid.fit(X_train, y_train)
 
-print("\nRandom Forest -best hyperparametre :", rfGrid.best_params_)
-print(f"Random Forest - best mse cv : {-rfGrid.best_score_:.4f}")
+# print("\nRandom Forest -best hyperparametre :", rfGrid.best_params_)
+# print(f"Random Forest - best mse cv : {-rfGrid.best_score_:.4f}")
 
 best_rf_model = rfGrid.best_estimator_
 r2_rf_tuned, rmse_rf_tuned, mae_rf_tuned = evaluate_model(best_rf_model, X_test, y_test)
@@ -84,7 +84,7 @@ xgb_pipeline = Pipeline([
     ('model', XGBRegressor(random_state=42, verbosity=0))
 ])
 
-xgb_param_grid = {
+xg_Param = {
     'model__learning_rate': [0.01, 0.1, 0.2],
     'model__max_depth': [3, 5, 7],
     'model__subsample': [0.7, 1.0],
@@ -93,16 +93,16 @@ xgb_param_grid = {
 
 xgb_grid = GridSearchCV(
     estimator=xgb_pipeline,
-    param_grid=xgb_param_grid,
+    param_grid=xg_Param,
     scoring='neg_root_mean_squared_error',
     cv=5
 )
 
 xgb_grid.fit(X_train, y_train)
 
-print("\nXGBoost - best hyperparametres :", xgb_grid.best_params_)
-print(f"XGBoost - best rmse cv : {-xgb_grid.best_score_:.4f}")
+# print("\nXGBoost - best hyperparametres :", xgb_grid.best_params_)
+# print(f"XGBoost - best rmse cv : {-xgb_grid.best_score_:.4f}")
 
-best_xgb_model = xgb_grid.best_estimator_
-r2_xgb_tuned, rmse_xgb_tuned, mae_xgb_tuned = evaluate_model(best_xgb_model, X_test, y_test)
-print(f"XGBoost optimise : R² = {r2_xgb_tuned:.4f}, mse = {rmse_xgb_tuned:.2f}, MAE = {mae_xgb_tuned:.2f}")
+bestmodelXG = xgb_grid.best_estimator_
+r2XG, rmseXG, maeXG = evaluate_model(bestmodelXG, X_test, y_test)
+print(f"XGBoost optimise : R² = {r2XG:.4f}, mse = {rmseXG:.2f}, MAE = {maeXG:.2f}")
