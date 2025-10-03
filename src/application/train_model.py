@@ -165,6 +165,9 @@ print(results_df)
 
 #save model 
 
-model = lib.load(r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\best_model_xg.pkl")
+lib.dump(bestmodelXG, r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\best_model_xg.pkl")
 
+
+def exportModel():
+    return lib.load(r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\best_model_xg.pkl")
 
