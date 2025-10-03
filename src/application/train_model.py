@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import joblib as lib
 from sklearn.model_selection import train_test_split,GridSearchCV
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -134,7 +135,7 @@ plt.show()
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
 axes[0].scatter(y_test, YP_RF, alpha=0.6)
-axes[0].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')  # diagonale
+axes[0].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')  
 axes[0].set_title("Predictions vs Reelles - Random Forest")
 axes[0].set_xlabel("Valeurs reelles")
 axes[0].set_ylabel("Valeurs predites")
@@ -160,3 +161,10 @@ results_df = pd.DataFrame({
 })
 
 print(results_df)
+
+
+#save model 
+
+model = lib.load(r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\best_model_xg.pkl")
+
+
