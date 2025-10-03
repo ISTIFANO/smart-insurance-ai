@@ -185,16 +185,3 @@ lib.dump(bestmodelXG, r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain
 def exportModel():
     return lib.load(r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\best_model_xg.pkl")
 
-fake_data = pd.DataFrame({
-        "age":21,
-        "sex": "female",
-        "bmi": 25,
-        "children": 2,
-        "smoker": "yes",
-        "region": "southwest" 
-        })
-    
-input_preprocessed = preprocessor.transform(fake_data)
-
-prediction = bestmodelXG.predict(input_preprocessed)
-print(f"Charge estimee : {prediction[0]:.2f}")
