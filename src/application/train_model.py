@@ -9,6 +9,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from xgboost import XGBRegressor
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '')))
 from evaluate_model import evaluate_model
 
 path = r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\infrastructure\data\assurance-maladie-68d92978e362f464596651.csv"
@@ -27,6 +30,13 @@ preprocessor = ColumnTransformer(
     ]
 )
 
+
+def exportpreprocessor():
+    return lib.dump(preprocessor,r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\preprocessor.pkl")
+
+
+def loadpreprocessor():
+    return lib.load(r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\preprocessor.pkl")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 models = {
@@ -112,6 +122,10 @@ print(f"XGBoost optimise : R² = {r2XG:.4f}, mse = {rmseXG:.2f}, MAE = {maeXG:.2
 YP_RF = best_rf_model.predict(X_test)
 Y_P_XG = bestmodelXG.predict(X_test)
 
+print(y_test)
+print(Y_P_XG)
+
+
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
 # Random Forest
@@ -171,3 +185,16 @@ lib.dump(bestmodelXG, r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain
 def exportModel():
     return lib.load(r"C:\Users\aamir\Desktop\YC\P\mart-insurance-ai\src\domain\best_model_xg.pkl")
 
+fake_data = pd.DataFrame({
+        "age":21,
+        "sex": "female",
+        "bmi": 25,
+        "children": 2,
+        "smoker": "yes",
+        "region": "southwest" 
+        })
+    
+input_preprocessed = preprocessor.transform(fake_data)
+
+prediction = bestmodelXG.predict(input_preprocessed)
+print(f"Charge estimee : {prediction[0]:.2f}")
